@@ -23,7 +23,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(600);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
         digitalWrite(ML_Ctrl, LOW);
         analogWrite(ML_PWM, 200);
         digitalWrite(MR_Ctrl, HIGH);
@@ -31,7 +31,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(time);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
         digitalWrite(ML_Ctrl, LOW);
         analogWrite(ML_PWM, 200);
         digitalWrite(MR_Ctrl, LOW);
@@ -39,7 +39,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(600);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
     }
     else if (direction == 2)
     {
@@ -50,7 +50,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(600);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
         digitalWrite(ML_Ctrl, HIGH);
         analogWrite(ML_PWM, 200);
         digitalWrite(MR_Ctrl, LOW);
@@ -58,7 +58,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(time);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
         digitalWrite(ML_Ctrl, LOW);
         analogWrite(ML_PWM, 200);
         digitalWrite(MR_Ctrl, LOW);
@@ -66,7 +66,7 @@ void turn(int direction, int time){      //1 for left (ccw), 2 for right (cw)
         delay(600);
         analogWrite(ML_PWM, 0);
         analogWrite(MR_PWM, 0);
-        delay(500);
+        delay(100);
     }
     return;
 }
@@ -143,7 +143,22 @@ void loop(){
         int deltax = arr[i][2] - arr[i][0];
         int deltay = arr[i][3] - arr[i][1];
         float magnitude = hypot(deltax, deltay);
-        float angle = atan(deltay/deltax);
+        float angle;
+        if (deltax > 0)
+        {
+            angle = atan(deltay/deltax);
+        }
+        else if (deltax == 0)
+        {
+            angle = 3.1415/2;
+        }
+        else if (deltax < 0)
+        {
+            angle = atan(deltay/deltax) + 3.1415;
+        }
+        
+        
+
         int angtime = abs((int)(2000*angle/3.1415));
         int drivetime = abs((int)(magnitude*50));
         if (angle >= 0)      //turn to direction and drive
@@ -156,10 +171,10 @@ void loop(){
         }
         
         myservo.write(S_Down);
-        delay(1000);
+        delay(500);
         drive(1, drivetime);
         myservo.write(S_Up);
-        delay(1000);
+        delay(500);
         if (angle < 0)      //turn back to horizontal
         {
             turn(1, angtime);
@@ -173,6 +188,11 @@ void loop(){
         if (i < (arraysize-1)){
             int deltax2 = arr[i+1][0] - arr[i][2];
             int deltay2 = arr[i+1][1] - arr[i][3];
+            if (deltax2 == 0 && deltay == 0)
+            {
+                continue;
+            }
+            
             float magnitude2 = hypot(deltax2, deltay2);
             float angle2 = atan(deltay2/deltax2);
             int angtime2 = abs((int)(2000*angle2/3.1415));
